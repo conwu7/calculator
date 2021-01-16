@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Kulim+Park:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,600;1,700&display=swap');
+
+body {
+  font-family: "Kulim Park", sans-serif;
+  touch-action: manipulation;
+  background-color: darkslategrey;
+  margin: 0;
+}
+* {
+  font-family: "Kulim Park", sans-serif;
+}
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 70px auto;
+  border: 10px solid darkslategray;
+  background-color: burlywood;
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 577px;
+  max-height: 800px;
+  align-items: stretch;
+}
+.displayContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-color: antiquewhite;
+  font-size: 400%;
+  font-weight: bold;
+  width: 100%;
+  max-width: 100%;
+  text-align: right;
+  margin: 0;
+  justify-content: center;
+  align-content: center;
+  border: 10px solid antiquewhite;
+
+  span {
+    margin: 0;
+  }
+}
+.operatorAndPreviousExpression {
+  display: flex;
+  justify-content: space-between;
+  background-color: inherit;
+  font-size: 40%;
+}
+.previousExpressionDisplay {
+  text-align: left;
+  min-height: 65px;
+  padding-left: 5px;
+}
+.answer {
+  color: green;
+  font-size: 0.6em;
+}
+.buttonContainer {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+  border: 2px solid darkseagreen;
+}
+button {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  padding: 20px 15px;
+  background-color: slategray;
+  color: antiquewhite;
+  border: 1px solid antiquewhite;
+  font-size: 300%;
+  opacity: 1;
+  transition: opacity 300ms linear;
+
+  &:hover { opacity: 0.6 }
+  span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+  }
+}
+sup {
+  font-size: 50%;
+  align-self: flex-start;
+}
+.currentNumberDisplay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  max-width: 100%;
+  overflow: auto;
+}
+.errorCurrentNumber {
+  color: firebrick;
+}
+.operator { background-color: black }
+.clear { background-color: darkgreen }
+.backspace { background-color: rgba(139, 0, 0, 0.6) }
+.powerOf { font-size: 350% }
+.multiply { font-size: 350% }
+@media only screen and (max-width: 500px) {
+  .currentNumberDisplay { font-size: 0.65em }
+}
+@media only screen and (max-width: 800px) {
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
+  .container {
+    max-width: none;
+    min-height: 80vh;
+    max-height: 1000px;
+    height: 100vh;
+    overflow: auto;
+    width: 100%;
+    margin: 0;
+    border: 0;
+  }
+  button {
+    padding: 10px;
+    margin: 0;
+  }
+}
