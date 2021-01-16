@@ -23,6 +23,7 @@ body {
   max-width: 600px;
   min-height: 577px;
   max-height: 800px;
+  z-index: 2;
 }
 .displayContainer {
   box-sizing: border-box;
@@ -61,7 +62,7 @@ body {
 .moreOptionsContainer {
   position: relative;
   display: flex;
-  height: 30px;
+  height: 42px;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -74,6 +75,7 @@ body {
     flex-direction: column;
     width: 100%;
     min-height: 30px;
+    border: 5px solid darkslategrey;
     background-color: antiquewhite;
     z-index: 999;
   }
@@ -82,7 +84,7 @@ body {
     color: antiquewhite;
     stroke-width: 2;
     height: 32px;
-    width: 100px;
+    width: 100%;
     cursor: pointer;
   }
 }
@@ -121,7 +123,7 @@ button.moreButton {
   width: 100%;
   flex-wrap: wrap;
   justify-content: space-between;
-  border: 2px solid darkseagreen;
+  border: 2px solid darkslategrey;
 }
 button {
   box-sizing: border-box;
@@ -163,7 +165,7 @@ sup {
 .operator { background-color: black }
 .clear { background-color: darkgreen }
 .backspace { background-color: rgba(139, 0, 0, 0.6) }
-.powerOf { font-size: 350% }
+.powerOf { font-size: 350%; background-color: #e37b0e; }
 .multiply { font-size: 350% }
 @media only screen and (max-width: 500px) {
   .currentNumberDisplay { font-size: 0.65em }
@@ -188,5 +190,20 @@ sup {
   button {
     padding: 10px;
     margin: 0;
+  }
+
+}
+@media all and (display-mode: standalone) {
+  body {
+    background-color: antiquewhite;
+  }
+  .shadeBottomOnStandalone {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100px;
+    z-index: -1;
+    background-color: darkslategrey;
   }
 }

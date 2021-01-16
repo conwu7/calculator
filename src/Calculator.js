@@ -17,8 +17,9 @@ function Calculator() {
     // on mobile set height to fullscreen. Doesn't always apply to device width > 800 due to max height set.
     useEffect(() => {
         setAppHeight();
-
     }, []);
+    // used directly on previous expression/current number displayed on dom.
+    // add thousand separators
     const formatForDisplay = useCallback( (str) => {
         // max digits for numbers displayed to user
         const maxDigits = {style:'decimal', maximumFractionDigits: 10, maximumSignificantDigits: 14};
@@ -33,31 +34,22 @@ function Calculator() {
             return `${strArray[0].toLocaleString()}.${strArray[1]}`
         }
         return Number(str).toLocaleString('en-US', maxDigits);
-    }, []
-    )
+    }, [])
+    // format current number for display - if current number is null, use previous number
     const formatCurrentNumberDisplayed = useCallback( (str) => {
         if (str === null) {return formatForDisplay(previousNumber)}
         return formatForDisplay(str);
-    }, [formatForDisplay, previousNumber]
-    )
-    // properly handle javascript's in-precision with decimals
-    const formatUnwieldyNumbers = useCallback( (value) => {
-        if (value.toString().includes('e')) {
-            return Number.parseFloat(value).toPrecision(6);
-        }
-        return formatForDisplay(value).replace(/,/g,'');
-    }, [formatForDisplay])
+    }, [formatForDisplay, previousNumber])
+    // add new result to past results array. mutate where necessary
     const handlePastResults = useCallback( function (newResult) {
         let newArray = [...pastResults];
         if (pastResults.length >= 5) {
             newArray.pop();
             newArray.unshift(newResult);
             setPastResults(newArray);
-        } else {
-            setPastResults([newResult, ...pastResults]);
-        }
+        } else setPastResults([newResult, ...pastResults]);
     }, [pastResults])
-    // function to handle selecting a past result
+    // function to handle selecting a past result - set it to current number string
     const handleUsePastResult = useCallback( function (pastResult) {
         return () => {
             const resultToUse = pastResult.replace(/,/g, '');
@@ -168,7 +160,7 @@ function Calculator() {
                 setCurrentNumberString(null);
                 setCurrentNumberAsResult(true);
                 handlePastResults(formatForDisplay(result));
-                setPreviousNumber(formatUnwieldyNumbers(result));
+                setPreviousNumber(formatForDisplay(result).replace(/,/g,''));
             }
             // if no calculation is done, set the current operator and the previous number as the current number displayed
             setCurrentOperator(operator);
@@ -179,7 +171,7 @@ function Calculator() {
         }
     }, [
         currentNumberString, currentOperator, formatForDisplay,
-        formatUnwieldyNumbers, hasError, previousNumber, handlePastResults
+        hasError, previousNumber, handlePastResults
     ])
     // function to remove last user entry
     const removeLastEntry  = useCallback( function () {
@@ -220,10 +212,12 @@ function Calculator() {
             }
         }, [handleNumbers, handleOperators, removeLastEntry]
     )
+    // add event listeners for keyboard - remove on unmount
     useEffect(() => {
         window.addEventListener('keyup', handleKeyUp);
         return () => window.removeEventListener('keyup', handleKeyUp)
     }, [handleKeyUp]);
+    // window resizing listener
     window.onresize = setAppHeight;
     function setAppHeight () {
         const containerEl = document.getElementsByClassName(`${style.container}`)[0];
@@ -248,10 +242,11 @@ function Calculator() {
         setPreviousExpression(null);
         setErrorStatus(false);
     }
+    // all buttons in order (order is important)
     const buttons = [
         ["Clr", "operator", 'clear', reset],
         [<MdKeyboardBackspace />, 'operator', "backspace", removeLastEntry],
-        [<>z<sup>a</sup></>, 'operator', 'powerOf', handleOperators('^')],
+        [<>y<sup>a</sup></>, 'operator', 'powerOf', handleOperators('^')],
         ["÷", 'operator', 'divide', handleOperators('/')],
         ["7", 'regular', 'seven', handleNumbers(7)],
         ["8", 'regular', 'eight', handleNumbers(8)],
@@ -280,13 +275,15 @@ function Calculator() {
         // note - this means 13 numbers are allowed since it's typically checking the current number
         return length >= 12;
     }
+    // toggle past results container
+    // status is optional - default is opposite of current status
     function toggleMoreOptions (newStatus) {
         if (newStatus && newStatus === 'collapse') return setMoreButtonStatus(false);
         setMoreButtonStatus(!moreButtonExpanded);
     }
     return (
         <div className="App" id="App">
-          <div className={style.container} id="kawa">
+          <div className={style.container}>
               <div className={style.displayContainer}>
                   <div className={style.operatorAndPreviousExpression}>
                       <span className={style.previousExpressionDisplay}>{previousExpression}</span>
@@ -357,6 +354,7 @@ function Calculator() {
               }
               </div>
             </div>
+            <div className={style.shadeBottomOnStandalone} />
         </div>
   );
 }
