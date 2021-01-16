@@ -132,7 +132,7 @@ function Calculator() {
             }
             // if no calculation is done, set the current operator and the previous number as the current number displayed
             setCurrentOperator(operator);
-            if (!result && currentNumberString) {
+            if (typeof result === 'undefined' && currentNumberString) {
                 setPreviousNumber(Number(currentNumberString));
                 setCurrentNumberString(null);
             }
