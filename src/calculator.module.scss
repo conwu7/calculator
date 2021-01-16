@@ -7,20 +7,22 @@ body {
   margin: 0;
 }
 * {
+  box-sizing: border-box;
   font-family: "Kulim Park", sans-serif;
 }
 .container {
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: column nowrap;
+  flex-shrink: 1;
+  align-items: stretch;
   justify-content: space-between;
   margin: 70px auto;
-  border: 10px solid darkslategray;
   background-color: burlywood;
+  overflow: hidden;
   min-width: 300px;
   max-width: 600px;
   min-height: 577px;
   max-height: 800px;
-  align-items: stretch;
 }
 .displayContainer {
   box-sizing: border-box;
@@ -56,12 +58,69 @@ body {
   color: green;
   font-size: 0.6em;
 }
+.moreOptionsContainer {
+  position: relative;
+  display: flex;
+  height: 30px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: antiquewhite;
+
+  .optionsWrapper {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 30px;
+    background-color: antiquewhite;
+    z-index: 999;
+  }
+  svg, path {
+    background-color: darkslategrey;
+    color: antiquewhite;
+    stroke-width: 2;
+    height: 32px;
+    width: 100px;
+    cursor: pointer;
+  }
+}
+.optionsContainer {
+  padding: 20px;
+}
+.pastResultsHeader {
+  display: block;
+  margin: 10px auto;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+}
+button.pastResult {
+  width: fit-content;
+  margin: auto;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 35px;
+}
+button.moreButton {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background-color: antiquewhite;
+  outline: none;
+
+  &:hover { opacity: 1 }
+  &.expanded svg { transform: rotate(180deg) }
+}
 .buttonContainer {
   display: flex;
+  flex-grow: 1;
   width: 100%;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: stretch;
   border: 2px solid darkseagreen;
 }
 button {
@@ -70,7 +129,7 @@ button {
   justify-content: center;
   align-items: center;
   width: 25%;
-  padding: 20px 15px;
+  padding: 15px 15px;
   background-color: slategray;
   color: antiquewhite;
   border: 1px solid antiquewhite;
@@ -118,11 +177,13 @@ sup {
     max-width: none;
     min-height: 80vh;
     max-height: 1000px;
-    height: 100vh;
     overflow: auto;
     width: 100%;
     margin: 0;
     border: 0;
+  }
+  .currentNumberDisplay {
+    min-height: 80px;
   }
   button {
     padding: 10px;

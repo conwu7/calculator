@@ -1,6 +1,7 @@
 import style from './calculator.module.scss';
-import { MdKeyboardBackspace } from 'react-icons/md';
+import { MdKeyboardBackspace, MdExpandMore } from 'react-icons/md';
 import { useEffect, useState, useCallback } from 'react';
+import CollapsibleCard from "./collapsible-card";
 
 function Calculator() {
     const [currentNumberString, setCurrentNumberString] = useState("0");
@@ -10,7 +11,8 @@ function Calculator() {
     const [isOperatorActive, setOperatorStatus] = useState(false);
     const [currentNumberIsResult, setCurrentNumberAsResult] = useState(false);
     const [hasError, setErrorStatus] = useState(false);
-
+    const [pastResults, setPastResults] = useState([]);
+    const [moreButtonExpanded, setMoreButtonStatus] = useState(false);
 
     // on mobile set height to fullscreen. Doesn't always apply to device width > 800 due to max height set.
     useEffect(() => {
@@ -21,6 +23,15 @@ function Calculator() {
         // max digits for numbers displayed to user
         const maxDigits = {style:'decimal', maximumFractionDigits: 10, maximumSignificantDigits: 14};
         if (isNaN(Number(str))) return str;
+        // don't remove dot for decimal
+        if (str.toString().slice(-1) === '.') {
+            return `${Number(str.slice(0,-1)).toLocaleString()}.`
+        }
+        // don't remove zeros after a decimal
+        if (str.toString().slice(-1) === "0" && str.toString().includes('.')) {
+            const strArray = str.split('.');
+            return `${strArray[0].toLocaleString()}.${strArray[1]}`
+        }
         return Number(str).toLocaleString('en-US', maxDigits);
     }, []
     )
@@ -31,14 +42,42 @@ function Calculator() {
     )
     // properly handle javascript's in-precision with decimals
     const formatUnwieldyNumbers = useCallback( (value) => {
-        // max digits for numbers displayed to user
-        const maxDigits = {style:'decimal', maximumFractionDigits: 10, maximumSignificantDigits: 14};
         if (value.toString().includes('e')) {
             return Number.parseFloat(value).toPrecision(6);
         }
-        return value.toLocaleString('en-US', maxDigits).replace(/,/g,'');
-    }, []
-    )
+        return formatForDisplay(value).replace(/,/g,'');
+    }, [formatForDisplay])
+    const handlePastResults = useCallback( function (newResult) {
+        let newArray = [...pastResults];
+        if (pastResults.length >= 5) {
+            newArray.pop();
+            newArray.unshift(newResult);
+            setPastResults(newArray);
+        } else {
+            setPastResults([newResult, ...pastResults]);
+        }
+    }, [pastResults])
+    // function to handle selecting a past result
+    const handleUsePastResult = useCallback( function (pastResult) {
+        return () => {
+            const resultToUse = pastResult.replace(/,/g, '');
+            if (hasError) reset();
+            else if (previousNumber) setPreviousExpression(formatForDisplay(previousNumber));
+            setCurrentNumberAsResult(false);
+            if (isOperatorActive) {
+                setOperatorStatus(false);
+                setCurrentNumberString(resultToUse);
+                if (currentOperator === '=') {
+                    setPreviousExpression("");
+                    setPreviousNumber(null);
+                    setCurrentOperator(null);
+                }
+            } else {
+                setCurrentNumberString(resultToUse);
+            }
+            setMoreButtonStatus(false);
+        }
+    }, [currentOperator, formatForDisplay, hasError, isOperatorActive, previousNumber])
     // function to handle number clicks
     const handleNumbers = useCallback(
         (number) => {
@@ -128,6 +167,7 @@ function Calculator() {
                 // set previous to result. Setting previous number here since user can't mutate result directly
                 setCurrentNumberString(null);
                 setCurrentNumberAsResult(true);
+                handlePastResults(formatForDisplay(result));
                 setPreviousNumber(formatUnwieldyNumbers(result));
             }
             // if no calculation is done, set the current operator and the previous number as the current number displayed
@@ -137,20 +177,35 @@ function Calculator() {
                 setCurrentNumberString(null);
             }
         }
-    }, [currentNumberString, currentOperator, formatForDisplay, formatUnwieldyNumbers, hasError, previousNumber]
-    )
+    }, [
+        currentNumberString, currentOperator, formatForDisplay,
+        formatUnwieldyNumbers, hasError, previousNumber, handlePastResults
+    ])
+    // function to remove last user entry
+    const removeLastEntry  = useCallback( function () {
+        if (currentNumberIsResult || isOperatorActive || hasError) return;
+        const currentLength = currentNumberString.length;
+        if (currentLength <= 1) return setCurrentNumberString("0");
+        setCurrentNumberString(currentNumberString.slice(0, currentLength-1));
+    }, [currentNumberString, currentNumberIsResult, hasError, isOperatorActive])
     // function to handle key presses
     const handleKeyUp = useCallback(
         (e) => {
             if (e.key >= 0 && e.key <= 9) {
-                console.log(e.key);
                 return handleNumbers((e.key))();
             }
-            if (['*', '-', '/', '+', '='].includes(e.key)) {
+            if (['*', '-', '/', '+', '=', '^'].includes(e.key)) {
                 return handleOperators(e.key)();
             }
-            console.log(e.key);
             switch (e.key) {
+                case '.' : {
+                    handleNumbers('.')();
+                    break
+                }
+                case 'Backspace' : {
+                    removeLastEntry();
+                    break;
+                }
                 case 'Escape' : {
                     reset();
                     break
@@ -160,10 +215,10 @@ function Calculator() {
                     break
                 }
                 default : {
-                    console.log('Hey there!');
+                    break
                 }
             }
-        }, [handleNumbers, handleOperators]
+        }, [handleNumbers, handleOperators, removeLastEntry]
     )
     useEffect(() => {
         window.addEventListener('keyup', handleKeyUp);
@@ -183,13 +238,6 @@ function Calculator() {
         } else {
             setCurrentNumberString(`-${currentNumberString}`);
         }
-    }
-    // function to remove last user entry
-    function removeLastEntry () {
-        if (currentNumberIsResult || isOperatorActive || hasError) return;
-        const currentLength = currentNumberString.length;
-        if (currentLength <= 1) return setCurrentNumberString("0");
-        setCurrentNumberString(currentNumberString.slice(0, currentLength-1));
     }
     // function for Clear - Reset
     function reset () {
@@ -232,8 +280,12 @@ function Calculator() {
         // note - this means 13 numbers are allowed since it's typically checking the current number
         return length >= 12;
     }
+    function toggleMoreOptions (newStatus) {
+        if (newStatus && newStatus === 'collapse') return setMoreButtonStatus(false);
+        setMoreButtonStatus(!moreButtonExpanded);
+    }
     return (
-        <div className="App">
+        <div className="App" id="App">
           <div className={style.container} id="kawa">
               <div className={style.displayContainer}>
                   <div className={style.operatorAndPreviousExpression}>
@@ -248,6 +300,46 @@ function Calculator() {
                        </span>
                       {formatCurrentNumberDisplayed(currentNumberString)}
                   </span>
+              </div>
+              <div className={style.moreOptionsContainer}>
+                  <CollapsibleCard
+                      cardHeader=
+                          {
+                              <button
+                                  onClick={toggleMoreOptions}
+                                  className={`${style.moreButton} ${moreButtonExpanded?style.expanded:""}`}
+                              >
+                                  <MdExpandMore />
+                              </button>
+                          }
+                      wrapperClassName={style.optionsWrapper}
+                      isCollapsed={!moreButtonExpanded}
+                      toggleCollapse={toggleMoreOptions}
+                      hideOnFocusLost={false}
+                      disableHeaderButton={true}
+                      >
+                      <div className={style.optionsContainer}>
+                          <div>
+                              {
+                                  pastResults.length === 0 ?
+                                  <span className={style.pastResultsHeader}>NO RESULTS YET</span> :
+                                  <span className={style.pastResultsHeader}>SELECT A PAST RESULT</span>
+                              }
+                              {
+                                  pastResults.map((result, index) => (
+                                      <button
+                                          key={index}
+                                          className={style.pastResult}
+                                          onClick={handleUsePastResult(result)}
+                                      >
+                                          {result}
+                                      </button>
+                                  ))
+                              }
+                          </div>
+                      </div>
+                  </CollapsibleCard>
+
               </div>
               <div className={style.buttonContainer}>
               {
