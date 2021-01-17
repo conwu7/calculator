@@ -90,7 +90,7 @@ body {
   }
 }
 .optionsContainer {
-  padding: 20px;
+  padding: 20px 20px 0;
 }
 .pastResultsHeader {
   display: block;
@@ -109,6 +109,32 @@ button.pastResult, button.clearPastResults {
 button.clearPastResults {
   margin-top: 15px;
   background-color: firebrick;
+}
+.pasteContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+input.pasteNumberField, button.applyPastedNumber {
+  height: 40px;
+  font-size: 25px;
+}
+input.pasteNumberField {
+  display: flex;
+  width: 80%;
+  text-align: center;
+}
+button.applyPastedNumber {
+  display: inline-flex;
+  border: none;
+  background-color: green;
+  width: fit-content;
+
+  svg, path {
+    height: 40px;
+    width: 40px;
+    background-color: green;
+  }
 }
 button.moreButton {
   display: flex;

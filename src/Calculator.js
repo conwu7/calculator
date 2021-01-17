@@ -1,5 +1,5 @@
 import style from './calculator.module.scss';
-import { MdKeyboardBackspace, MdExpandMore } from 'react-icons/md';
+import { MdKeyboardBackspace, MdExpandMore, MdDone } from 'react-icons/md';
 import { useEffect, useState, useCallback } from 'react';
 import CollapsibleCard from "./collapsible-card";
 
@@ -13,7 +13,7 @@ function Calculator() {
     const [hasError, setErrorStatus] = useState(false);
     const [pastResults, setPastResults] = useState([]);
     const [moreButtonExpanded, setMoreButtonStatus] = useState(false);
-
+    const inputFieldID = "pastedNumberField";
     // get past results from local storage
     useEffect(() => {
         setPastResults(JSON.parse(localStorage.getItem('calculatorPastResults')) || []);
@@ -61,6 +61,7 @@ function Calculator() {
     const handleUsePastResult = useCallback( function (pastResult) {
         return () => {
             const resultToUse = pastResult.replace(/,/g, '');
+            if (isNaN(Number(resultToUse))) return window.alert(pastResult + ' is not a valid number');
             if (hasError) reset();
             else if (previousNumber) setPreviousExpression(formatForDisplay(previousNumber));
             setCurrentNumberAsResult(false);
@@ -78,6 +79,13 @@ function Calculator() {
             setMoreButtonStatus(false);
         }
     }, [currentOperator, formatForDisplay, hasError, isOperatorActive, previousNumber])
+    // function to handle pasted numbers
+    const handlePastedNumber = useCallback(function (e) {
+        e.preventDefault();
+        const value = document.getElementById(inputFieldID).value;
+        if (value === "") return
+        handleUsePastResult(value)();
+    }, [handleUsePastResult])
     // function to handle number clicks
     const handleNumbers = useCallback(
         (number) => {
@@ -191,6 +199,7 @@ function Calculator() {
     // function to handle key presses
     const handleKeyUp = useCallback(
         (e) => {
+            if (e.target.id === inputFieldID) return
             if (e.key >= 0 && e.key <= 9) {
                 return handleNumbers((e.key))();
             }
@@ -222,8 +231,19 @@ function Calculator() {
     )
     // add event listeners for keyboard - remove on unmount
     useEffect(() => {
+        const scrollToTop = () => {
+            document.body.scrollTo(0, 0)
+            window.scrollTo(0, 0)
+        };
+        scrollToTop();
+        document.getElementById(inputFieldID)
+            .addEventListener('focusout', scrollToTop);
         window.addEventListener('keyup', handleKeyUp);
-        return () => window.removeEventListener('keyup', handleKeyUp)
+        return () => {
+            document.getElementById(inputFieldID)
+                .removeEventListener('focusout', scrollToTop);
+            window.removeEventListener('keyup', handleKeyUp);
+        }
     }, [handleKeyUp]);
     // window resizing listener
     window.onresize = setAppHeight;
@@ -325,6 +345,23 @@ function Calculator() {
                       >
                       <div className={style.optionsContainer}>
                           <div>
+                              <form
+                                  onSubmit={handlePastedNumber}
+                                  className={style.pasteContainer}>
+                                  <input
+                                      className={style.pasteNumberField}
+                                      id={inputFieldID}
+                                      type="text"
+                                      placeholder="Paste a number"
+                                  />
+                                  <button
+                                      type="submit"
+                                      className={style.applyPastedNumber}
+                                  >
+                                    <MdDone />
+                                  </button>
+
+                              </form>
                               {
                                   pastResults.length === 0 ?
                                   <span className={style.pastResultsHeader}>NO RESULTS</span> :
