@@ -62,6 +62,7 @@ function Calculator() {
         return () => {
             const resultToUse = pastResult.replace(/,/g, '');
             if (isNaN(Number(resultToUse))) return window.alert(pastResult + ' is not a valid number');
+            if (resultToUse.length > 14) return window.alert(`Number is too big - 14 digits max (${resultToUse.length})`);
             if (hasError) reset();
             else if (previousNumber) setPreviousExpression(formatForDisplay(previousNumber));
             setCurrentNumberAsResult(false);
@@ -232,8 +233,10 @@ function Calculator() {
     // add event listeners for keyboard - remove on unmount
     useEffect(() => {
         const scrollToTop = () => {
-            document.body.scrollTo(0, 0)
-            window.scrollTo(0, 0)
+            document.body.scrollTop = 0;
+            window.scrollTop = 0;
+            document.body.scrollTo(0, 0);
+            window.scrollTo(0, 0);
         };
         scrollToTop();
         document.getElementById(inputFieldID)
