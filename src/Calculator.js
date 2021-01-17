@@ -14,6 +14,10 @@ function Calculator() {
     const [pastResults, setPastResults] = useState([]);
     const [moreButtonExpanded, setMoreButtonStatus] = useState(false);
 
+    // get past results from local storage
+    useEffect(() => {
+        setPastResults(JSON.parse(localStorage.getItem('calculatorPastResults')) || []);
+    }, [])
     // on mobile set height to fullscreen. Doesn't always apply to device width > 800 due to max height set.
     useEffect(() => {
         setAppHeight();
@@ -43,11 +47,10 @@ function Calculator() {
     // add new result to past results array. mutate where necessary
     const handlePastResults = useCallback( function (newResult) {
         let newArray = [...pastResults];
-        if (pastResults.length >= 5) {
-            newArray.pop();
-            newArray.unshift(newResult);
-            setPastResults(newArray);
-        } else setPastResults([newResult, ...pastResults]);
+        if (pastResults.length >= 5) newArray.pop();
+        newArray.unshift(newResult);
+        setPastResults(newArray);
+        localStorage.setItem('calculatorPastResults', JSON.stringify(newArray));
     }, [pastResults])
     // function to handle selecting a past result - set it to current number string
     const handleUsePastResult = useCallback( function (pastResult) {
@@ -304,6 +307,7 @@ function Calculator() {
                           {
                               <button
                                   onClick={toggleMoreOptions}
+                                  tabIndex="-1"
                                   className={`${style.moreButton} ${moreButtonExpanded?style.expanded:""}`}
                               >
                                   <MdExpandMore />
