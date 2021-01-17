@@ -52,6 +52,11 @@ function Calculator() {
         setPastResults(newArray);
         localStorage.setItem('calculatorPastResults', JSON.stringify(newArray));
     }, [pastResults])
+    // clear past results
+    const handleClearPastResults = () => {
+        setPastResults([]);
+        localStorage.setItem('calculatorPastResults', JSON.stringify([]));
+    }
     // function to handle selecting a past result - set it to current number string
     const handleUsePastResult = useCallback( function (pastResult) {
         return () => {
@@ -153,7 +158,7 @@ function Calculator() {
                     setCurrentNumberString("ERROR, CLEAR");
                     return
                 }
-                if (result > 99999999999999 || result < -99999999999999) {
+                if (result > 999999999999999 || result < -999999999999999) {
                     setErrorStatus(true);
                     setCurrentNumberString("TOO LONG, CLEAR");
                     return
@@ -275,8 +280,7 @@ function Calculator() {
         let length = str.length;
         if (numberStr.includes('.')) length--;
         if (numberStr.includes('-')) length--;
-        // note - this means 13 numbers are allowed since it's typically checking the current number
-        return length >= 12;
+        return length >= 13;
     }
     // toggle past results container
     // status is optional - default is opposite of current status
@@ -323,8 +327,8 @@ function Calculator() {
                           <div>
                               {
                                   pastResults.length === 0 ?
-                                  <span className={style.pastResultsHeader}>NO RESULTS YET</span> :
-                                  <span className={style.pastResultsHeader}>SELECT A PAST RESULT</span>
+                                  <span className={style.pastResultsHeader}>NO RESULTS</span> :
+                                  <span className={style.pastResultsHeader}>PAST RESULTS</span>
                               }
                               {
                                   pastResults.map((result, index) => (
@@ -336,6 +340,15 @@ function Calculator() {
                                           {result}
                                       </button>
                                   ))
+                              }
+                              {
+                                  pastResults.length > 0 &&
+                                      <button
+                                          className={style.clearPastResults}
+                                          onClick={handleClearPastResults}
+                                      >
+                                          Clear All Results
+                                      </button>
                               }
                           </div>
                       </div>

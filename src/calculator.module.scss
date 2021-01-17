@@ -74,8 +74,9 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 30px;
-    border: 5px solid darkslategrey;
+    min-height: 42px;
+    //border: 15px solid darkslategrey;
+    //border-top: none;
     background-color: antiquewhite;
     z-index: 999;
   }
@@ -83,7 +84,7 @@ body {
     background-color: darkslategrey;
     color: antiquewhite;
     stroke-width: 2;
-    height: 32px;
+    height: 42px;
     width: 100%;
     cursor: pointer;
   }
@@ -93,17 +94,21 @@ body {
 }
 .pastResultsHeader {
   display: block;
-  margin: 10px auto;
+  margin: 0 auto 10px;
   font-size: 25px;
   font-weight: bold;
   text-align: center;
 }
-button.pastResult {
+button.pastResult, button.clearPastResults {
   width: fit-content;
   margin: auto;
   padding: 5px 15px;
   cursor: pointer;
-  font-size: 35px;
+  font-size: 30px;
+}
+button.clearPastResults {
+  margin-top: 15px;
+  background-color: firebrick;
 }
 button.moreButton {
   display: flex;
