@@ -62,7 +62,7 @@ body {
 .moreOptionsContainer {
   position: relative;
   display: flex;
-  height: 42px;
+  height: 47px;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -74,11 +74,10 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 42px;
-    //border: 15px solid darkslategrey;
-    //border-top: none;
-    background-color: antiquewhite;
+    min-height: 47px;
+    background-color: cadetblue;
     z-index: 999;
+    border-bottom: 5px solid darkslategrey;
   }
   svg, path {
     background-color: darkslategrey;
@@ -90,7 +89,7 @@ body {
   }
 }
 .optionsContainer {
-  padding: 20px 20px 0;
+  padding: 15px 20px 0;
 }
 .pastResultsHeader {
   display: block;
@@ -101,7 +100,7 @@ body {
 }
 button.pastResult, button.clearPastResults {
   width: fit-content;
-  margin: auto;
+  margin: 2px auto;
   padding: 5px 15px;
   cursor: pointer;
   font-size: 30px;

@@ -232,12 +232,12 @@ function Calculator() {
     )
     // add event listeners for keyboard - remove on unmount
     useEffect(() => {
-        const scrollToTop = () => {
+        function scrollToTop () {
             document.body.scrollTop = 0;
             window.scrollTop = 0;
             document.body.scrollTo(0, 0);
             window.scrollTo(0, 0);
-        };
+        }
         scrollToTop();
         document.getElementById(inputFieldID)
             .addEventListener('focusout', scrollToTop);
