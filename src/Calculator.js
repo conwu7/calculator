@@ -85,6 +85,7 @@ function Calculator() {
         const value = document.getElementById(inputFieldID).value;
         if (value === "") return
         handleUsePastResult(value)();
+        document.activeElement.blur(); // remove focus from input so further keyboard presses are not sent to the text field
     }, [handleUsePastResult])
     // function to prevent erroneous entries when focus is on a button
     const preventClickEventOnKeyDown = (e) => e.preventDefault();
