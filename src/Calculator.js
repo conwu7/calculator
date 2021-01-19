@@ -28,6 +28,7 @@ function Calculator() {
         // max digits for numbers displayed to user
         const maxDigits = {style:'decimal', maximumFractionDigits: 10, maximumSignificantDigits: 14};
         if (isNaN(Number(str))) return str;
+        if (str === null) return str;
         // don't remove dot for decimal
         if (str.toString().slice(-1) === '.') {
             return `${Number(str.slice(0,-1)).toLocaleString()}.`
@@ -200,6 +201,7 @@ function Calculator() {
     // function to handle key presses
     const handleKeyUp = useCallback(
         (e) => {
+            e.preventDefault();
             if (e.target.id === inputFieldID) return
             if (e.key >= 0 && e.key <= 9) {
                 return handleNumbers((e.key))();
@@ -266,10 +268,11 @@ function Calculator() {
     }
     // function for Clear - Reset
     function reset () {
-        setPreviousNumber(null);
-        setCurrentOperator(null);
+        console.log('i reset');
         setCurrentNumberString("0");
         setCurrentNumberAsResult(false);
+        setPreviousNumber(null);
+        setCurrentOperator(null);
         setPreviousExpression(null);
         setErrorStatus(false);
     }
