@@ -59,25 +59,23 @@ function Calculator() {
         localStorage.setItem('calculatorPastResults', JSON.stringify([]));
     }
     // function to handle selecting a past result - set it to current number string
-    const handleUsePastResult = useCallback( function (pastResult) {
+    const handleUsePastResult = useCallback( function (pastResult, noLimit) {
         return () => {
             const resultToUse = pastResult.replace(/,/g, '');
             if (isNaN(Number(resultToUse))) return window.alert(pastResult + ' is not a valid number');
-            if (resultToUse.length > 14) return window.alert(`Number is too big - 14 digits max (${resultToUse.length})`);
+            if (resultToUse.length > 14 && !noLimit) return window.alert(`Number is too big - 14 digits max (${resultToUse.length})`);
             if (hasError) reset();
             else if (previousNumber) setPreviousExpression(formatForDisplay(previousNumber));
             setCurrentNumberAsResult(false);
             if (isOperatorActive) {
                 setOperatorStatus(false);
-                setCurrentNumberString(resultToUse);
                 if (currentOperator === '=') {
                     setPreviousExpression("");
                     setPreviousNumber(null);
                     setCurrentOperator(null);
                 }
-            } else {
-                setCurrentNumberString(resultToUse);
             }
+            setCurrentNumberString(resultToUse);
             setMoreButtonStatus(false);
         }
     }, [currentOperator, formatForDisplay, hasError, isOperatorActive, previousNumber])
@@ -88,10 +86,12 @@ function Calculator() {
         if (value === "") return
         handleUsePastResult(value)();
     }, [handleUsePastResult])
+    // function to prevent erroneous entries when focus is on a button
+    const preventClickEventOnKeyDown = (e) => e.preventDefault();
     // function to handle number clicks
     const handleNumbers = useCallback(
         (number) => {
-            return () => {
+            return (e) => {
                 if (hasError) return;
                 if (numberTooBig(currentNumberString) && !isOperatorActive) return;
                 if (currentNumberString && currentNumberString.includes('.') && number === '.') return
@@ -268,7 +268,6 @@ function Calculator() {
     }
     // function for Clear - Reset
     function reset () {
-        console.log('i reset');
         setCurrentNumberString("0");
         setCurrentNumberAsResult(false);
         setPreviousNumber(null);
@@ -336,6 +335,8 @@ function Calculator() {
                       cardHeader=
                           {
                               <button
+                                  type="button"
+                                  onKeyDown={preventClickEventOnKeyDown}
                                   onClick={toggleMoreOptions}
                                   tabIndex="-1"
                                   className={`${style.moreButton} ${moreButtonExpanded?style.expanded:""}`}
@@ -363,6 +364,7 @@ function Calculator() {
                                   <button
                                       type="submit"
                                       className={style.applyPastedNumber}
+                                      tabIndex="-1"
                                   >
                                     <MdDone />
                                   </button>
@@ -376,9 +378,12 @@ function Calculator() {
                               {
                                   pastResults.map((result, index) => (
                                       <button
+                                          type="button"
                                           key={index}
                                           className={style.pastResult}
-                                          onClick={handleUsePastResult(result)}
+                                          onKeyDown={preventClickEventOnKeyDown}
+                                          onClick={handleUsePastResult(result, true)}
+                                          tabIndex="-1"
                                       >
                                           {result}
                                       </button>
@@ -387,8 +392,11 @@ function Calculator() {
                               {
                                   pastResults.length > 0 &&
                                       <button
+                                          type="button"
                                           className={style.clearPastResults}
+                                          onKeyDown={preventClickEventOnKeyDown}
                                           onClick={handleClearPastResults}
+                                          tabIndex="-1"
                                       >
                                           Clear All Results
                                       </button>
@@ -402,7 +410,9 @@ function Calculator() {
               {
                   buttons.map(button => (
                       <button
+                          type="button"
                           key={button[2]}
+                          onKeyDown={preventClickEventOnKeyDown}
                           onClick={button[3]}
                           className={`${style[button[1]]} ${style[button[2]]}`}
                           data-operator={button[2]}
