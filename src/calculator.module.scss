@@ -77,19 +77,19 @@ body {
     min-height: 47px;
     background-color: cadetblue;
     z-index: 999;
-    border-bottom: 5px solid darkslategrey;
   }
   svg, path {
     background-color: darkslategrey;
     color: antiquewhite;
     stroke-width: 2;
-    height: 42px;
+    height: 47px;
     width: 100%;
     cursor: pointer;
   }
 }
 .optionsContainer {
   padding: 15px 20px 0;
+  border-bottom: 5px solid darkslategrey;
 }
 .pastResultsHeader {
   display: block;
@@ -106,7 +106,7 @@ button.pastResult, button.clearPastResults {
   font-size: 30px;
 }
 button.clearPastResults {
-  margin-top: 15px;
+  margin: 15px auto;
   background-color: firebrick;
 }
 .pasteContainer {

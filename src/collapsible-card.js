@@ -25,7 +25,7 @@ export default function CollapsibleCard (props) {
     const cardHeaderRef = React.createRef();
     const spring = useSpring({
         to: {
-            height: isCollapsed? 0: height+10
+            height: isCollapsed? 0: height
             // Adding 10 here cause it seems to undercut the height a little
         }
     })
