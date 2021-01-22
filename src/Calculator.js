@@ -260,12 +260,23 @@ function Calculator() {
     }
     // function to handle negative toggle
     function handleNegativeToggle () {
-        if (hasError) return;
+        if (hasError) return
+        // using the toggle right after an operation
         if (currentNumberIsResult || isOperatorActive) {
             setCurrentNumberAsResult(false);
-            return setPreviousNumber(previousNumber * -1);
+            setPreviousDisplay("");
+            if (currentOperator === '=') {
+                setOperatorStatus(false);
+                setCurrentOperator(null);
+                setCurrentNumberString(`${-1 * previousNumber}`);
+                setPreviousNumber(null);
+                return
+            } else {
+                setPreviousNumber(previousNumber * -1);
+                return
+            }
         }
-        if (currentNumberString[0] === '-') setCurrentNumberString(currentNumberString.slice(-1));
+        if (currentNumberString[0] === '-') setCurrentNumberString(currentNumberString.slice(1));
         else setCurrentNumberString(`-${currentNumberString}`);
     }
     // function for Clear - Reset
