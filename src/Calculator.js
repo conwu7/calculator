@@ -6,7 +6,7 @@ import CollapsibleCard from "./collapsible-card";
 function Calculator() {
     const [currentNumberString, setCurrentNumberString] = useState("0");
     const [previousNumber, setPreviousNumber] = useState(null);
-    const [previousExpression, setPreviousExpression] = useState("");
+    const [previousDisplay, setPreviousDisplay] = useState("");
     const [currentOperator, setCurrentOperator] = useState(null);
     const [isOperatorActive, setOperatorStatus] = useState(false);
     const [currentNumberIsResult, setCurrentNumberAsResult] = useState(false);
@@ -65,12 +65,12 @@ function Calculator() {
             if (isNaN(Number(resultToUse))) return window.alert(pastResult + ' is not a valid number');
             if (resultToUse.length > 14 && !noLimit) return window.alert(`Number is too big - 14 digits max (${resultToUse.length})`);
             if (hasError) reset();
-            else if (previousNumber) setPreviousExpression(formatForDisplay(previousNumber));
+            else if (previousNumber) setPreviousDisplay(formatForDisplay(previousNumber));
             setCurrentNumberAsResult(false);
             if (isOperatorActive) {
                 setOperatorStatus(false);
                 if (currentOperator === '=') {
-                    setPreviousExpression("");
+                    setPreviousDisplay("");
                     setPreviousNumber(null);
                     setCurrentOperator(null);
                 }
@@ -96,13 +96,13 @@ function Calculator() {
                 if (hasError) return;
                 if (numberTooBig(currentNumberString) && !isOperatorActive) return;
                 if (currentNumberString && currentNumberString.includes('.') && number === '.') return
-                if (previousNumber) setPreviousExpression(formatForDisplay(previousNumber));
+                if (previousNumber) setPreviousDisplay(formatForDisplay(previousNumber));
                 setCurrentNumberAsResult(false);
                 if (isOperatorActive) {
                     setOperatorStatus(false);
                     setCurrentNumberString(number.toString());
                     if (currentOperator === '=') {
-                        setPreviousExpression("");
+                        setPreviousDisplay("");
                         setPreviousNumber(null);
                         setCurrentOperator(null);
                     }
@@ -157,9 +157,9 @@ function Calculator() {
                 }
                 // After clicking an operator that does arithmetic - show the last expression. If = just show the last number
                 if (currentOperator === '=') {
-                    setPreviousExpression(formatForDisplay(previousNumber));
+                    setPreviousDisplay(formatForDisplay(previousNumber));
                 } else {
-                    setPreviousExpression(
+                    setPreviousDisplay(
                         `${formatForDisplay(previousNumber)} ${currentOperator} ${formatForDisplay(currentNumberString)}`
                     );
                 }
@@ -260,12 +260,13 @@ function Calculator() {
     }
     // function to handle negative toggle
     function handleNegativeToggle () {
-        if (hasError || isOperatorActive) return;
-        if (currentNumberString[0] === '-') {
-            setCurrentNumberString(currentNumberString.slice(1));
-        } else {
-            setCurrentNumberString(`-${currentNumberString}`);
+        if (hasError) return;
+        if (currentNumberIsResult || isOperatorActive) {
+            setCurrentNumberAsResult(false);
+            return setPreviousNumber(previousNumber * -1);
         }
+        if (currentNumberString[0] === '-') setCurrentNumberString(currentNumberString.slice(-1));
+        else setCurrentNumberString(`-${currentNumberString}`);
     }
     // function for Clear - Reset
     function reset () {
@@ -273,7 +274,7 @@ function Calculator() {
         setCurrentNumberAsResult(false);
         setPreviousNumber(null);
         setCurrentOperator(null);
-        setPreviousExpression(null);
+        setPreviousDisplay(null);
         setErrorStatus(false);
     }
     // all buttons in order (order is important)
@@ -319,7 +320,7 @@ function Calculator() {
           <div className={style.container}>
               <div className={style.displayContainer}>
                   <div className={style.operatorAndPreviousExpression}>
-                      <span className={style.previousExpressionDisplay}>{previousExpression}</span>
+                      <span className={style.previousExpressionDisplay}>{previousDisplay}</span>
                       <span className={style.currentOperatorDisplay}>{currentOperator}</span>
                   </div>
                   <span className={`${style.currentNumberDisplay} ${hasError?style.errorCurrentNumber:""}`}>
