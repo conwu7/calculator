@@ -35,6 +35,7 @@ function Calculator() {
         }
         // don't remove zeros after a decimal
         if (str.toString().slice(-1) === "0" && str.toString().includes('.')) {
+            console.log(str);
             const strArray = str.split('.');
             return `${strArray[0].toLocaleString()}.${strArray[1]}`
         }
@@ -94,6 +95,7 @@ function Calculator() {
         (number) => {
             return (e) => {
                 if (hasError) return;
+                // if operator isn't active, you're not adding to the current number string
                 if (numberTooBig(currentNumberString) && !isOperatorActive) return;
                 if (currentNumberString && currentNumberString.includes('.') && number === '.') return
                 if (previousNumber) setPreviousDisplay(formatForDisplay(previousNumber));
@@ -173,6 +175,9 @@ function Calculator() {
                     setErrorStatus(true);
                     setCurrentNumberString("TOO LONG, CLEAR");
                     return
+                }
+                if (`${result}`.includes('e')) {
+                    result = result.toFixed(12);
                 }
                 // set current number to null. prevent further operations until another number is selected
                 // set previous to result. Setting previous number here since user can't mutate result directly
@@ -255,7 +260,7 @@ function Calculator() {
     window.onresize = setAppHeight;
     function setAppHeight () {
         const containerEl = document.getElementsByClassName(`${style.container}`)[0];
-        const newHeight = window.navigator.standalone === true ? window.innerHeight - 40 : window.innerHeight;
+        const newHeight = window.navigator.standalone ? window.innerHeight - 40 : window.innerHeight;
         containerEl.style.height = `${newHeight}px`;
     }
     // function to handle negative toggle
@@ -437,7 +442,6 @@ function Calculator() {
               }
               </div>
             </div>
-            <div className={style.shadeBottomOnStandalone} />
         </div>
   );
 }
