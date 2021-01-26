@@ -124,7 +124,13 @@ function Calculator() {
     const handleOperators = useCallback( (operator) => {
         return () => {
             if (hasError) return
-            if (currentNumberString === '-' || currentNumberString === '.') return
+            switch (currentNumberString) {
+                case '-' :
+                case '.' :
+                case '-.' : {
+                    return
+                }
+            }
             setOperatorStatus(true);
             // handle arithmetic if there is a previous number
             let result;
