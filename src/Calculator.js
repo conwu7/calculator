@@ -130,6 +130,7 @@ function Calculator() {
                 case '-.' : {
                     return
                 }
+                default : break
             }
             setOperatorStatus(true);
             // handle arithmetic if there is a previous number
