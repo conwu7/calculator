@@ -16,7 +16,7 @@ body {
   flex-shrink: 1;
   align-items: stretch;
   justify-content: space-between;
-  margin: 70px auto;
+  margin: auto;
   background-color: darkslategrey;
   overflow: hidden;
   min-width: 300px;
@@ -144,7 +144,7 @@ button.moreButton {
     stroke-width: 2;
     height: 45px;
     width: 100px;
-    border-radius: 23px;
+    border-radius: 33px;
     background-color: cadetblue;
     cursor: pointer;
   }
@@ -167,7 +167,7 @@ button {
   align-items: center;
   width: 25%;
   padding: 15px 15px;
-  background-color: slategray;
+  background-color: transparent;
   color: antiquewhite;
   border: 1px solid darkslategrey;
   font-size: 300%;
@@ -226,11 +226,14 @@ sup {
   button {
     padding: 10px;
     margin: 0;
+    max-height: none;
+    width: 23%;
+    font-weight: 900;
   }
   button.regular, button.operator {
-    border-radius: 50%;
     height: 0;
     padding-bottom: 20%;
+    border-radius: 50%;
 
     span {
       position: absolute;
